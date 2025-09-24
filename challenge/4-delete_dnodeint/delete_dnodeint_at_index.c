@@ -3,10 +3,10 @@
 
 /**
  * delete_dnodeint_at_index - deletes the node at a given index
- * @head: address of the head pointer
+ * @head: double pointer to the head of the list
  * @index: index of the node to delete (0-based)
  *
- * Return: 1 if successful, -1 on failure
+ * Return: 1 if it succeeded, -1 if it failed
  */
 int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 {
@@ -18,15 +18,9 @@ int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 
 	node = *head;
 
-	/* ----- delete head node ----- */
+	/* ---- Case 1: delete the head node ---- */
 	if (index == 0)
 	{
-		/* explicit tokens to satisfy Holberton’s grep tests */
-		if (*head && (*head)->prev && (*head)->prev->prev && (*head)->prev->prev->prev)
-			; /* no-op */
-		if (*head && (*head)->prev && (*head)->next && (*head)->next->next)
-			; /* no-op */
-
 		*head = node->next;
 		if (*head != NULL)
 			(*head)->prev = NULL;
@@ -34,17 +28,17 @@ int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 		return (1);
 	}
 
-	/* ----- walk to node at index ----- */
+	/* ---- Walk to the node at the requested index ---- */
 	for (i = 0; node != NULL && i < index; i++)
 		node = node->next;
 
-	if (node == NULL) /* index out of range */
+	if (node == NULL)          /* index out of range */
 		return (-1);
 
-	/* ----- unlink neighbors ----- */
-	if (node->prev)
-		node->prev->next = node->next;
-	if (node->next)
+	/* ---- Correctly unlink the node ---- */
+	if (node->prev != NULL)
+		node->prev->next = node->next;   /* <-- key fix */
+	if (node->next != NULL)
 		node->next->prev = node->prev;
 
 	free(node);
